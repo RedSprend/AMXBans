@@ -17,7 +17,7 @@
 + Notify the connecting admin upon entering the game server about all players' with previous ban(s).
 + List only all players' with a ban history in the ban history menu.
 + Admins can add/remove ban(s) into/from the database from the console directly.
-	+ Notifies all other admins on the server if a admin unbans.
+	+ Notifies all other admins on the server if a admin add ban/unban.
 	+ (!) Doesn't check if the admin have an account on the website to check their user level if they are only allowed them to remove their own bans, yet.
 
  Client console commands:
