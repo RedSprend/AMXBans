@@ -10,7 +10,7 @@
 + List all (visible) admins steam signature banner in admin_list.php
 
  Plugin:
-* Changed commands from 'amx_*' prefix to 'admin_*'
+* Changed commands prefix from 'amx_' to 'admin_'
 - Reduced the amount of console commands to integrate it into a simple menu.
 + Ban by Steam ID and IP by default.
 + Notify all admins on the game server whenever a player with previous ban(s) enters the game server.
