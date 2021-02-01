@@ -32,6 +32,7 @@
 
 [] - optional argument
 
+
 NOTE! Only Tested on Sven Co-op 5+
 
 Might not but should work with other GoldSrc games & mods as well.
