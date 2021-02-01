@@ -18,7 +18,7 @@
 + List only all players' with a ban history in the ban history menu.
 + Admins can add/remove ban(s) into/from the database from the console directly.
 	+ Notifies all other admins on the server if a admin unbans.
-	+ Doesn't check if the admin have an account on the website to check their user level to only allow them to remove their own bans, yet.
+	+ (!) Doesn't check if the admin have an account on the website to check their user level if they are only allowed them to remove their own bans, yet.
 
  Client console commands:
 + admin_addban <^"authid"^ or IP> <minutes (0 = permanent)> <^"reason"^> <name> [ip]
