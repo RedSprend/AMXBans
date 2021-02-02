@@ -21,7 +21,7 @@
 	+ (!) Doesn't check if the admin have an account in the database to check their user level if they are only allowed to remove their own bans, yet.
 
  Client console commands:
-+ admin_addban <"authid" or IP> <minutes (0 = permanent)> <^"reason"^> <name> [ip]
++ admin_addban <"authid" or IP> <minutes (0 = permanent)> <"reason"> <name> [ip]
 + admin_banmenu - displays ban menu
 + admin_banhistorymenu - displays ban history of players menu
 + admin_disconnectedmenu - displays disconnected players menu
