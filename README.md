@@ -7,7 +7,7 @@
 
  Web:
 + New 'Last Active'-column with a date of all admins last active status (not publicly visible to everybody) in admin_list.php
-+ List all visible admins in admin_list.php steam signature banner
++ List all visible admins in admin_list.php steam signature banner (credit to sami1)
 
  Plugin:
 + Changed commands prefix from 'amx_' to 'admin_'
