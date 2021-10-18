@@ -28,7 +28,7 @@
 						<td style="text-align:center">{if $admins.expired=="0"}<i>{"_UNLIMITED"|lang}</i>{else}{$admins.expired|date_format:"%d. %b %Y - %T"}{/if}</td>
 						{/if}
 						<td style="text-align:center">{$admins.lastactive}</td>
-						<td style="text-align:center"><a href="http://steamcommunity.com/profiles/{$admins.comid}" target="_blank"><img src="http://steamsignature.com/status/english/{$admins.comid}.png" alt="{"_OPENSTEAMCOMSITE"|lang}"/></a>&nbsp;</td>
+						<td style="text-align:center"><a href="https://steamcommunity.com/profiles/{$admins.comid}" target="_blank"><img src="https://steamsignature.com/status/english/{$admins.comid}.png" alt="{"_OPENSTEAMCOMSITE"|lang}"/></a>&nbsp;</td>
 					</tr> 
 				{/foreach}
 				<!-- Stop Loop -->
