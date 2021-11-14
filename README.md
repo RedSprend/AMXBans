@@ -1,10 +1,10 @@
  Customized AMXBans
- 
- Requirements:
+ <br><br>
+ Requirements:<br>
  (Based on) AMXBans 6.13 (http://www.amxbans.net/dl.php?f=6.13)
- 
+ <br><br>
  Incomplete list of changes:
-
+<br>
  Web:
 + New 'Last Active'-column with a date of all admins last active status (not publicly visible to everybody) in admin_list.php
 + List all visible admins in admin_list.php steam signature banner (credit to sami1)
@@ -26,13 +26,9 @@
 + admin_banhistorymenu - displays ban history of players menu
 + admin_disconnectedmenu - displays disconnected players menu
 
-<> - argument is required
-
-"" - argument has to be embedded within quote marks
-
-[] - optional argument
-
-
-NOTE! Only Tested on Sven Co-op 5+
-
+<> - argument is required<br>
+"" - argument has to be embedded within quote marks<br>
+[] - optional argument<br>
+<br>
+NOTE! Only Tested on Sven Co-op 5+<br>
 Might not but should work with other GoldSrc games & mods as well.
