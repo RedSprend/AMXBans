@@ -330,7 +330,10 @@ get_ban_type(type[], len, authid[], ip[])
 {
 	if(contain(authid,"STEAM_0:") == 0 && contain(authid,"STEAM_0:2") == -1)
 	{
-		formatex(type,len,"S")
+		if( strlen(ip) )
+			formatex(type,len,"SI")
+		else
+			formatex(type,len,"S")
 	}
 	else
 	{

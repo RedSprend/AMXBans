@@ -195,6 +195,12 @@ public cmdAddBan( id, level, cid )
 		return PLUGIN_HANDLED
 	}
 
+	if( str_to_num(ban_length) <= -1 )
+	{
+		client_print(id, print_console, "Invalid ban length format (have to be 0 or greater).")
+		return PLUGIN_HANDLED;
+	}
+
 	if( equali(g_ident, "STEAM_ID_PENDING") ||
 		equali(g_ident, "STEAM_ID_LAN") ||
 		equali(g_ident, "VALVE_ID_LAN") ||
@@ -247,7 +253,10 @@ public cmdAddBan( id, level, cid )
 		copy(chData[szIP], charsmax(chData[szIP]), plr_ip)
 		copy(chData[szReason], charsmax(chData[szReason]), reason)
 
-		g_ban_type[id] = "S"
+		if( strlen(plr_ip) )
+			g_ban_type[id] = "SI"
+		else
+			g_ban_type[id] = "S"
 	} else {
 		formatex(pquery, charsmax(pquery), "SELECT player_ip FROM %s%s WHERE player_ip='%s' AND expired=0", g_dbPrefix, tbl_bans, g_ident)
 
@@ -877,7 +886,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 		return PLUGIN_HANDLED
 	}
 
-	if( equal(ban_type, "S") )
+/*	if( equal(ban_type, "S") )
 	{
 		if( serverCmd )
 			log_message("[AMXBans] %L", LANG_SERVER, "STEAMID_BANNED_SUCCESS_IP_LOGGED", pl_authid)
@@ -890,7 +899,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 			log_message("[AMXBans] %L", LANG_SERVER, "STEAMID_IP_BANNED_SUCCESS")
 		else
 			client_print(id,print_console,"%L", id, "STEAMID_IP_BANNED_SUCCESS")
-	}
+	}*/
 
 	if( serverCmd )
 	{
@@ -1099,12 +1108,13 @@ public locate_player(id, identifier[])
 		player = find_player("bl", identifier)
 
 	// Check based on IP address
-	if(!player)
+/*	if(!player)
 	{
 		player = find_player("d", identifier)
 		if ( player )
 			g_ban_type[id] = "SI"
-	}
+	}*/
+	g_ban_type[id] = "SI" // ban by IP as well
 
 	// Check based on user ID
 	if( !player && identifier[0]=='#' && identifier[1] )
