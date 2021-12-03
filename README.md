@@ -1,13 +1,13 @@
  Customized AMXBans
- 
- Requirements:
+ <br><br>
+ Requirements:<br>
  (Based on) AMXBans 6.13 (http://www.amxbans.net/dl.php?f=6.13)
- 
+ <br><br>
  Incomplete list of changes:
-
+<br>
  Web:
 + New 'Last Active'-column with a date of all admins last active status (not publicly visible to everybody) in admin_list.php
-+ List all (visible) admins steam signature banner in admin_list.php
++ List all visible admins in admin_list.php steam signature banner (credit to sami1)
 
  Plugin:
 + Changed commands prefix from 'amx_' to 'admin_'
@@ -18,21 +18,17 @@
 + List only all players' with a ban history in the ban history menu.
 + Admins can add/remove ban(s) into/from the database from the console directly.
 	+ Notifies all other admins on the server if a admin add ban/unban.
-	+ (!) Doesn't check if the admin have an account on the website to check their user level if they are only allowed to remove their own bans, yet.
+	+ (!) Doesn't check if the admin have an account in the database to check their user level if they are only allowed to remove their own bans, yet.
 
  Client console commands:
-+ admin_addban <^"authid"^ or IP> <minutes (0 = permanent)> <^"reason"^> <name> [ip]
++ admin_addban <"authid" or IP> <minutes (0 = permanent)> <"reason"> <name> [ip]
 + admin_banmenu - displays ban menu
 + admin_banhistorymenu - displays ban history of players menu
 + admin_disconnectedmenu - displays disconnected players menu
 
-<> - argument is required
-
-^"^" - argument has to be embedded within quote marks
-
-[] - optional argument
-
-
-NOTE! Only Tested on Sven Co-op 5+
-
+<> - argument is required<br>
+"" - argument has to be embedded within quote marks<br>
+[] - optional argument<br>
+<br>
+NOTE! Only Tested on Sven Co-op 5+<br>
 Might not but should work with other GoldSrc games & mods as well.
