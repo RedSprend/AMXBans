@@ -67,10 +67,11 @@ stock MenuSetProps(id,menu,title[])
 /*******************************************************************************************************************/
 stock MenuGetPlayers(menu,callback)
 {
-	new plnum = get_maxplayers()
 	new szID[3],count
-	
-	for(new i = 1; i <= plnum;i++)
+/*	new players[MAX_PLAYERS], pnum
+	get_players(players, pnum, "ch")
+	for( new i = 0; i < pnum; i++ )*/
+	for(new i = 1; i <= get_maxplayers(); i++)
 	{
 		if(!is_user_connected(i))
 			continue
@@ -86,10 +87,11 @@ stock MenuGetPlayers(menu,callback)
 
 stock bool:MenuGetBannedPlayers(menu,callback)
 {
-	new plnum = get_maxplayers()
 	new szID[3],count
-	
-	for(new i = 1; i <= plnum;i++)
+/*	new players[MAX_PLAYERS], pnum
+	get_players(players, pnum, "ch")
+	for( new i = 0; i < pnum; i++ )*/
+	for(new i = 1; i <= get_maxplayers(); i++)
 	{
 		if(!is_user_connected(i) || !g_being_flagged[i])
 			continue
@@ -248,7 +250,7 @@ public callback_MenuGetBannedPlayers(id,menu,item)
 	formatex(szText,charsmax(szText),"%s %s",g_PlayerName[pid],szStatus)
 	menu_item_setname(menu,item,szText)
 	
-	if(get_user_flags(pid) & ADMIN_IMMUNITY || is_user_bot(pid) || g_being_banned[pid] || !is_user_connected(pid)) return ITEM_DISABLED
+	if(get_user_flags(pid) & ADMIN_IMMUNITY && !(get_user_flags(pid) & ADMIN_RCON) || is_user_bot(pid) || g_being_banned[pid] || !is_user_connected(pid)) return ITEM_DISABLED
 	
 	return ITEM_ENABLED
 }
@@ -301,8 +303,9 @@ stock get_flagtime_string(id,btime,text[],len,without=0)
 user_viewing_menu()
 {
 	new menu,newmenu,menupage
-	new pnum=get_maxplayers()
-	for(new i=1;i<=pnum;i++)
+	new players[MAX_PLAYERS], pnum
+	get_players(players, pnum, "ch")
+	for( new i = 0; i < pnum; i++ )
 	{
 		if(!is_user_connected(i) || is_user_bot(i) || is_user_hltv(i))
 			continue

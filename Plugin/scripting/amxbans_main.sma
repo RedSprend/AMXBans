@@ -89,7 +89,7 @@ public plugin_init()
 	register_srvcmd("amx_setlowbantimes", "setLowBantimes")
 	register_srvcmd("amx_setflagtimes","setFlagTimes")
 
-	register_concmd("amx_reloadreasons", "cmdFetchReasons", ADMIN_CFG)
+	register_srvcmd("amx_reloadreasons", "cmdFetchReasons")
 
 	pcvar_serverip		=	register_cvar("amxbans_server_address","", FCVAR_PROTECTED)
 	pcvar_server_nick 	= 	register_cvar("amxbans_servernick", "", FCVAR_PROTECTED)

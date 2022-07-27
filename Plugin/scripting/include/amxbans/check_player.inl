@@ -46,23 +46,29 @@
 
 public prebanned_check(id)
 {
-	if(!get_pcvar_num(pcvar_show_prebanned) || is_user_bot(id) || id == 0)
+	if(!get_pcvar_num(pcvar_show_prebanned) || is_user_bot(id))
 		return PLUGIN_HANDLED
 
 	if( get_user_flags(id) & ADMIN_KICK )
 	{
 		for(new i = 1; i <= get_maxplayers(); i++)
+		{
+			if( is_user_bot(id) || is_user_hltv(id) )
+				continue
+
 			bPlayerSQLCheck[id][i] = false
+		}
 
 		set_task( 3.0, "NotifyAdmin", id + 338 )
 		return PLUGIN_HANDLED
 	}
 
-	new szAuthID[35], szIP[20], pquery[512]
+	new szAuthID[MAX_AUTHID_LENGTH], szIP[20], pquery[512]
 	get_user_authid(id, szAuthID, charsmax(szAuthID))
 	get_user_ip(id, szIP, charsmax(szIP), 1)
 
-	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ((player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI')) AND expired=1",g_dbPrefix, tbl_bans, szAuthID, szIP)
+	//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ((player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI')) AND expired=1",g_dbPrefix, tbl_bans, szAuthID, szIP)
+	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1",g_dbPrefix, tbl_bans, szAuthID)
 
 	new data[1]
 	data[0] = id
@@ -91,15 +97,18 @@ public prebanned_check_(failstate, Handle:query, error[], errnum, data[], size)
 	if( ban_count <= 0 || !is_user_connected(id) )
 		return PLUGIN_HANDLED
 
-	new name[32], authid[32]
+	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH]
 	get_user_authid(id, authid, charsmax(authid))
 	get_user_name(id, name, charsmax(name))
 
 	g_being_flagged[id] = true
 
+/*	new players[MAX_PLAYERS], pnum
+	get_players(players, pnum, "ch")
+	for( new i = 0; i < pnum; i++ )*/
 	for(new i = 1; i <= get_maxplayers(); i++)
 	{
-		if( i == id || !is_user_connected(i) || is_user_bot(i) || is_user_hltv(i) || bPlayerSQLCheck[id][i] )
+		if( /*i == id ||*/ !is_user_connected(i) || is_user_bot(id) || is_user_hltv(id) || bPlayerSQLCheck[id][i] )
 			continue
 
 		if( get_user_flags(i) & ADMIN_CHAT )
@@ -114,11 +123,12 @@ public prebanned_check_(failstate, Handle:query, error[], errnum, data[], size)
 
 public prebanned_check_single( id, iPlayer )
 {
-	new authid[32], ip[20], pquery[512]
+	new authid[MAX_AUTHID_LENGTH], ip[20], pquery[512]
 	get_user_authid(iPlayer, authid, charsmax(authid))
 	get_user_ip(iPlayer, ip, charsmax(ip), 1)
 
-	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1", g_dbPrefix, tbl_bans, authid, ip)
+	//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1", g_dbPrefix, tbl_bans, authid, ip)
+	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1", g_dbPrefix, tbl_bans, authid)
 
 	new data[2]
 	data[0] = id
@@ -148,7 +158,7 @@ public prebanned_check_single_(failstate, Handle:query, error[], errnum, data[],
 	if( ban_count <= 0 || !is_user_connected(id) || !is_user_connected(iPlayer) || bPlayerSQLCheck[id][iPlayer] )
 		return PLUGIN_HANDLED
 
-	new name[32], authid[32]
+	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH]
 	get_user_authid(iPlayer, authid, charsmax(authid))
 	get_user_name(iPlayer, name, charsmax(name))
 
@@ -164,9 +174,12 @@ public NotifyAdmin( id )
 {
 	id -= 338;
 
-	for( new i = 1; i <= get_maxplayers(); i++ )
+/*	new players[MAX_PLAYERS], pnum
+	get_players(players, pnum, "ch")
+	for( new i = 0; i < pnum; i++ )*/
+	for(new i = 1; i <= get_maxplayers(); i++)
 	{
-		if( i == id || !is_user_connected(i) || is_user_bot(i) || is_user_hltv(i) || bPlayerSQLCheck[id][i] )
+		if( is_user_bot(id) || is_user_hltv(id) || /*i == id ||*/ !is_user_connected(i) || bPlayerSQLCheck[id][i] )
 			continue
 
 		prebanned_check_single(id, i)

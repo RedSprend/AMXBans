@@ -46,26 +46,23 @@ public cmdLst(id,level,cid)
 {
 	if(id) return PLUGIN_HANDLED
 	
-	new name[32],authid[32],ip[16],status,immun,userid
-	
-	new plnum=get_maxplayers()
-	
+	new name[MAX_NAME_LENGTH],authid[MAX_AUTHID_LENGTH],ip[16],status,immun,userid
+
 	//console_print(id,"%c%c%c%c",-1,-1,-1,-1)
-	
-	for(new pid = 1; pid <= plnum; pid++)
+	for(new i = 1; i <= get_maxplayers(); i++)
 	{
-		if(is_user_connected(pid)) {
-			get_user_name(pid,name,charsmax(name))
-			get_user_ip(pid,ip,charsmax(ip),1)
-			get_user_authid(pid,authid,charsmax(authid))
-			userid=get_user_userid(pid)
+		if(is_user_connected(i)) {
+			get_user_name(i,name,charsmax(name))
+			get_user_ip(i,ip,charsmax(ip),1)
+			get_user_authid(i,authid,charsmax(authid))
+			userid=get_user_userid(i)
 			
 			status=0
-			if(is_user_bot(pid)) status=1
-			if(is_user_hltv(pid)) status=2
+			if(is_user_bot(i)) status=1
+			if(is_user_hltv(i)) status=2
 			
 			immun=0
-			if(get_user_flags(pid) & ADMIN_IMMUNITY) immun=1
+			if(get_user_flags(i) & ADMIN_IMMUNITY) immun=1
 			
 			console_print(id,"%s%c%d%c%s%c%s%c%d%c%d",name,-4,userid,-4,authid,-4,ip,-4,status,-4,immun)
 		}

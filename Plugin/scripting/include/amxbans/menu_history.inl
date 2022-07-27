@@ -34,7 +34,10 @@
  *  version.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+ 
+// TO-DO:
+// Threaded queries are capable of throwing a "out of bounds" error if the offender disconnected while the threaded query is still running (aka player index becomes invalid).
+// Store the authid and retrieve the info from that instead of player index.
 
 #if defined _menu_history_included
     #endinput
@@ -91,19 +94,18 @@ public actionHistoryMenu(id,menu,item)
 	}
 	else
 	{
-		new authid[32], ip[16]
+		new authid[32]//, ip[16]
 		get_user_authid(pid, authid, charsmax(authid))
-		get_user_ip(id, ip, charsmax(ip), 1)
+		//get_user_ip(id, ip, charsmax(ip), 1)
 
-		formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1", g_dbPrefix, tbl_bans, authid, ip)
+		//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1", g_dbPrefix, tbl_bans, authid, ip)
+		formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1", g_dbPrefix, tbl_bans, authid)
 	}
 
 	SQL_ThreadQuery(g_SqlX, "select_motd_history", pquery, data, sizeof(data))
 
 	return PLUGIN_HANDLED
 }
-
-new szTitle[128]
 
 public select_motd_history(failstate, Handle:query, error[], errnum, data[], size)
 {
@@ -117,12 +119,19 @@ public select_motd_history(failstate, Handle:query, error[], errnum, data[], siz
 	new id = data[0]
 	new pid = data[1]
 
-	new name[32], authid[32], ip[16]
+	if(!pid)
+	{
+		client_print(id, print_chat, "%i is not a valid player (player left the game?)", pid)
+		return PLUGIN_HANDLED
+	}
+
+	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH], ip[20]
 	get_user_name(pid, name, charsmax(name))
 	get_user_authid(pid, authid, charsmax(authid))
 	get_user_ip(pid, ip, charsmax(ip), 1)
 
-	formatex(szTitle, charsmax(szTitle), "%L", id, "HISTORY_MOTD", name, authid)
+	new szTitle[128]
+	formatex(szTitle, charsmax(szTitle), "%L", LANG_PLAYER, "HISTORY_MOTD", name, authid)
 
 	if(!g_supported_game)
 	{
@@ -143,12 +152,15 @@ public select_motd_history(failstate, Handle:query, error[], errnum, data[], siz
 
 		new szQuery[1024]
 		formatex(szQuery, charsmax(szQuery), "SELECT ban_created,ban_reason,ban_length,admin_nick \
-			FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1 ORDER BY ban_created DESC",
-			g_dbPrefix, tbl_bans, authid, ip)
+			FROM `%s%s` WHERE player_id='%s' AND expired=1 ORDER BY ban_created DESC",
+			g_dbPrefix, tbl_bans, authid)
+			//FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1 ORDER BY ban_created DESC",
+			//g_dbPrefix, tbl_bans, authid, ip)
 
-		new pData[3]
+		new pData[4]
 		pData[0] = id
-		pData[1] = ban_count
+		pData[1] = pid
+		pData[2] = ban_count
 
 		SQL_ThreadQuery(g_SqlX, "player_ban_history", szQuery, pData, sizeof(pData))
 
@@ -208,15 +220,26 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 	}
 
 	new id = data[0]
-	new ban_count = data[1]
+	new pid = data[1] // will cause a error if the player (offender) left and the threaded query is still running!
+	new ban_count = data[2]
 
-	new iBanCreated, szReason[512], iBanLength, szAdminName[32]
+	if(!pid)
+	{
+		client_print(id, print_chat, "%i is not a valid player (player left the game?)", pid)
+		return PLUGIN_HANDLED
+	}
+
+	new iBanCreated, szReason[128], iBanLength, szAdminName[MAX_NAME_LENGTH]
 	new iYear, iMonth, iDay, iHour, iMinute, iSecond
 
-	new szMsg[2048], len = 0
+	new szMsg[1024], len
 
-	client_print(id, print_console, "===============================================")
-	client_print(id, print_console, "%s", szTitle)
+	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH]
+	get_user_name(pid, name, charsmax(name))
+	get_user_authid(pid, authid, charsmax(authid))
+
+	client_print(id, print_console, "=================================")
+	client_print(id, print_console, "%L", LANG_PLAYER, "HISTORY_MOTD", name, authid)
 	client_print(id, print_console, "%L (%i)", LANG_PLAYER, "EXPIRED_BANS", ban_count )
 
 	new rows = SQL_NumRows(szQuery)
@@ -229,11 +252,20 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 
 		UnixToTime(iBanCreated, iYear, iMonth, iDay, iHour, iMinute, iSecond)
 
-		len = 0
-		len = formatex(szMsg[len], charsmax(szMsg) - len, "^n%L: %02d %s %d - %02d:%02d:%02d", LANG_PLAYER, "INVOKED", iDay, NumberToMonth(iMonth), iYear, iHour, iMinute, iSecond)
+		// 15
+		/*len = 0
+		len = formatex(szMsg, charsmax(szMsg), "^n%L: %02d %s %d - %02d:%02d:%02d", LANG_PLAYER, "INVOKED", iDay, NumberToMonth(iMonth), iYear, iHour, iMinute, iSecond)
 		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L", LANG_PLAYER, "MSG_2", szReason)
 		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L: %i minute%s", LANG_PLAYER, "BAN_LENGTH", iBanLength, (iBanLength > 1) ? "s" : "")
-		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L", LANG_PLAYER, "MSG_6", szAdminName)
+		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L", LANG_PLAYER, "MSG_6", szAdminName)*/
+
+		formatex(szMsg, charsmax(szMsg), "^n%L: %02d %s %d - %02d:%02d:%02d", LANG_PLAYER, "INVOKED", iDay, NumberToMonth(iMonth), iYear, iHour, iMinute, iSecond)
+		client_print(id, print_console, "%s", szMsg)
+		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MSG_2", szReason)
+		client_print(id, print_console, "%s", szMsg)
+		formatex(szMsg, charsmax(szMsg), "%L: %s", LANG_PLAYER, "BAN_LENGTH", get_time_length_ex(iBanLength * 60))
+		client_print(id, print_console, "%s", szMsg)
+		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MSG_6", szAdminName)
 		client_print(id, print_console, "%s", szMsg)
 
 		if( --rows == 0 ) // reached last row
@@ -242,12 +274,11 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		SQL_NextRow(szQuery)
 	}
 
-	//client_print(id, print_console, "%s", szMsg)
-	client_print(id, print_console, "===============================================")
+	client_print(id, print_console, "=================================")
 
 	len = 0
 	formatex(szMsg[len], charsmax(szMsg) - len, "%L", LANG_PLAYER, "CHECK_CONSOLE")
-	show_motd(id, szMsg, szTitle)
+	client_print(id, print_chat, "* %L", LANG_PLAYER, "CHECK_CONSOLE")
 
 	SQL_FreeHandle(szQuery)
 

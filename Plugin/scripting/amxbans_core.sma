@@ -120,7 +120,8 @@ public plugin_init()
 	register_cvar("amx_sql_type", "mysql", FCVAR_PROTECTED)
 	register_cvar("amx_sql_timeout", "60", FCVAR_PROTECTED)
 
-	register_concmd("amx_reloadadmins", "cmdReload", ADMIN_CFG)
+	register_srvcmd("amx_reloadadmins", "cmdReload")
+	//register_concmd("amx_reloadadmins", "cmdReload", ADMIN_CFG)
 	//register_concmd("admin_addadmin", "addadminfn", ADMIN_RCON, "<playername|auth> <accessflags> [password] [authtype] - add specified player as an admin to users.ini")
 
 	format(g_cmdLoopback, charsmax(g_cmdLoopback), "amxauth%c%c%c%c", random_num('A', 'Z'), random_num('A', 'Z'), random_num('A', 'Z'), random_num('A', 'Z'))
@@ -186,6 +187,7 @@ public delayed_plugin_cfg()
 	server_cmd("amx_sqladmins")
 	server_exec();
 
+	set_task(1.0, "adminSql") // reload admins once again
 	set_task(6.1, "delayed_load")
 }
 
@@ -200,10 +202,21 @@ public delayed_load()
 	
 	while (curMap[i] != '_' && curMap[i++] != '^0') {}
 	
-	if (curMap[i]=='_')
+/*	if (curMap[i]=='_')
 	{
 		// this map has a prefix
 		curMap[i]='^0';
+		formatex(configFile, charsmax(configFile), "%s/maps/prefix_%s.cfg", configDir, curMap);
+
+		if (file_exists(configFile))
+		{
+			server_cmd("exec %s", configFile);
+		}
+	}*/
+	if (curMap[i]=='_')
+	{
+		// this map has a prefix
+		//curMap[i]='^0';
 		formatex(configFile, charsmax(configFile), "%s/maps/prefix_%s.cfg", configDir, curMap);
 
 		if (file_exists(configFile))

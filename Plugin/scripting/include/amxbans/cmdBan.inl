@@ -756,9 +756,6 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 		//Permanent Ban
 		format(cTimeLengthPlayer, charsmax(cTimeLengthPlayer), "%L", player, "TIME_ELEMENT_PERMANENTLY")
 		format(cTimeLengthServer, charsmax(cTimeLengthServer), "%L", LANG_SERVER, "TIME_ELEMENT_PERMANENTLY")
-
-		if(player && is_user_connected(player))
-			SlowHack(player)
 	}
 
 	new show_activity = get_cvar_num("amx_show_activity")
