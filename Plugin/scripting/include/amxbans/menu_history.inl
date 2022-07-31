@@ -44,6 +44,11 @@
 #endif
 #define _menu_history_included
 
+#include "unixtime.inc"
+
+stock const MonthName[][] = { "Invalid month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
+#define NumberToMonth(%1) MonthName[%1]
+
 #include <amxmodx>
 
 public cmdBanhistoryMenu(id,level,cid)
@@ -145,17 +150,11 @@ public select_motd_history(failstate, Handle:query, error[], errnum, data[], siz
 			return PLUGIN_HANDLED
 		}
 
-		new szLang[5]
-		get_user_info(id, "lang", szLang, charsmax(szLang))
-		if(equal(szLang,""))
-			get_cvar_string("amx_language", szLang, charsmax(szLang))
-
 		new szQuery[1024]
-		formatex(szQuery, charsmax(szQuery), "SELECT ban_created,ban_reason,ban_length,admin_nick \
-			FROM `%s%s` WHERE player_id='%s' AND expired=1 ORDER BY ban_created DESC",
-			g_dbPrefix, tbl_bans, authid)
-			//FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1 ORDER BY ban_created DESC",
-			//g_dbPrefix, tbl_bans, authid, ip)
+		formatex(szQuery, charsmax(szQuery), "SELECT b.ban_created,b.ban_reason,b.ban_length,b.admin_nick,aa.nickname \
+			FROM `%s%s` AS b, `%s_amxadmins` AS aa \
+			WHERE b.player_id='%s' AND (aa.steamid=b.admin_nick OR aa.steamid=b.admin_ip OR aa.steamid=b.admin_id OR aa.nickname=b.admin_id OR aa.nickname=b.admin_nick) AND b.expired=1 ORDER BY b.ban_created DESC",
+			g_dbPrefix, tbl_bans, g_dbPrefix, authid)
 
 		new pData[4]
 		pData[0] = id
@@ -205,11 +204,6 @@ public select_motd_history(failstate, Handle:query, error[], errnum, data[], siz
 	return PLUGIN_HANDLED
 }
 
-#include "unixtime.inc"
-
-stock const MonthName[][] = { "Invalid month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
-#define NumberToMonth(%1) MonthName[%1]
-
 public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], size)
 {
 	if(failstate)
@@ -220,8 +214,11 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 	}
 
 	new id = data[0]
-	new pid = data[1] // will cause a error if the player (offender) left and the threaded query is still running!
+	new pid = data[1]
 	new ban_count = data[2]
+
+	if(!id)
+		return PLUGIN_HANDLED
 
 	if(!pid)
 	{
@@ -229,7 +226,7 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		return PLUGIN_HANDLED
 	}
 
-	new iBanCreated, szReason[128], iBanLength, szAdminName[MAX_NAME_LENGTH]
+	new iBanCreated, szReason[128], iBanLength, szAdminNickname[MAX_NAME_LENGTH], szAdminName[MAX_NAME_LENGTH]
 	new iYear, iMonth, iDay, iHour, iMinute, iSecond
 
 	new szMsg[1024], len
@@ -248,16 +245,10 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		iBanCreated = SQL_ReadResult(szQuery, 0)
 		SQL_ReadResult(szQuery, 1, szReason, charsmax(szReason))
 		iBanLength = SQL_ReadResult(szQuery, 2)
-		SQL_ReadResult(szQuery, 3, szAdminName, charsmax(szAdminName))
+		SQL_ReadResult(szQuery, 3, szAdminNickname, charsmax(szAdminNickname))
+		SQL_ReadResult(szQuery, 4, szAdminName, charsmax(szAdminName))
 
 		UnixToTime(iBanCreated, iYear, iMonth, iDay, iHour, iMinute, iSecond)
-
-		// 15
-		/*len = 0
-		len = formatex(szMsg, charsmax(szMsg), "^n%L: %02d %s %d - %02d:%02d:%02d", LANG_PLAYER, "INVOKED", iDay, NumberToMonth(iMonth), iYear, iHour, iMinute, iSecond)
-		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L", LANG_PLAYER, "MSG_2", szReason)
-		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L: %i minute%s", LANG_PLAYER, "BAN_LENGTH", iBanLength, (iBanLength > 1) ? "s" : "")
-		len += formatex(szMsg[len], charsmax(szMsg) - len, "^n%L", LANG_PLAYER, "MSG_6", szAdminName)*/
 
 		formatex(szMsg, charsmax(szMsg), "^n%L: %02d %s %d - %02d:%02d:%02d", LANG_PLAYER, "INVOKED", iDay, NumberToMonth(iMonth), iYear, iHour, iMinute, iSecond)
 		client_print(id, print_console, "%s", szMsg)
@@ -265,7 +256,10 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		client_print(id, print_console, "%s", szMsg)
 		formatex(szMsg, charsmax(szMsg), "%L: %s", LANG_PLAYER, "BAN_LENGTH", get_time_length_ex(iBanLength * 60))
 		client_print(id, print_console, "%s", szMsg)
-		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MSG_6", szAdminName)
+		if( !equali(szAdminNickname, szAdminName) )
+			formatex(szMsg, charsmax(szMsg), "%L (%s)", LANG_PLAYER, "MSG_6", szAdminNickname, szAdminName)
+		else
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MSG_6", szAdminNickname)
 		client_print(id, print_console, "%s", szMsg)
 
 		if( --rows == 0 ) // reached last row
