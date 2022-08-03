@@ -226,14 +226,38 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		return PLUGIN_HANDLED
 	}
 
+	new authid[MAX_AUTHID_LENGTH]
+	get_user_authid(pid, authid, charsmax(authid))
+
+	if(!SQL_NumRows(szQuery))
+	{
+		SQL_FreeHandle(szQuery)
+
+		new puery[1024]
+		formatex(puery, charsmax(puery), "SELECT ban_created,ban_reason,ban_length,admin_nick FROM `%s%s` WHERE player_id='%s' AND expired=1 ORDER BY ban_created DESC", g_dbPrefix, tbl_bans, authid)
+
+		new pData[5]
+		pData[0] = id
+		pData[1] = pid
+		pData[2] = ban_count
+		pData[3] = true
+
+		SQL_ThreadQuery(g_SqlX, "player_ban_history", puery, pData, sizeof(pData))
+
+		return PLUGIN_HANDLED
+	}
+
+	new bool:bNoLongerAdmin = false
+	if( data[3] )
+		bNoLongerAdmin = true
+
 	new iBanCreated, szReason[128], iBanLength, szAdminNickname[MAX_NAME_LENGTH], szAdminName[MAX_NAME_LENGTH]
 	new iYear, iMonth, iDay, iHour, iMinute, iSecond
 
 	new szMsg[1024], len
 
-	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH]
+	new name[MAX_NAME_LENGTH]
 	get_user_name(pid, name, charsmax(name))
-	get_user_authid(pid, authid, charsmax(authid))
 
 	client_print(id, print_console, "=================================")
 	client_print(id, print_console, "%L", LANG_PLAYER, "HISTORY_MOTD", name, authid)
@@ -246,7 +270,8 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		SQL_ReadResult(szQuery, 1, szReason, charsmax(szReason))
 		iBanLength = SQL_ReadResult(szQuery, 2)
 		SQL_ReadResult(szQuery, 3, szAdminNickname, charsmax(szAdminNickname))
-		SQL_ReadResult(szQuery, 4, szAdminName, charsmax(szAdminName))
+		if( !bNoLongerAdmin )
+			SQL_ReadResult(szQuery, 4, szAdminName, charsmax(szAdminName))
 
 		UnixToTime(iBanCreated, iYear, iMonth, iDay, iHour, iMinute, iSecond)
 
@@ -256,7 +281,9 @@ public player_ban_history(failstate, Handle:szQuery, error[], errnum, data[], si
 		client_print(id, print_console, "%s", szMsg)
 		formatex(szMsg, charsmax(szMsg), "%L: %s", LANG_PLAYER, "BAN_LENGTH", get_time_length_ex(iBanLength * 60))
 		client_print(id, print_console, "%s", szMsg)
-		if( !equali(szAdminNickname, szAdminName) )
+		if( bNoLongerAdmin )
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MSG_5", szAdminNickname)
+		else if( !equali(szAdminNickname, szAdminName) )
 			formatex(szMsg, charsmax(szMsg), "%L (%s)", LANG_PLAYER, "MSG_6", szAdminNickname, szAdminName)
 		else
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MSG_6", szAdminNickname)
