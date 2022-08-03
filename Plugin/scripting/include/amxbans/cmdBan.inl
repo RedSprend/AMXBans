@@ -124,7 +124,7 @@ public _cmdMenuBan(failstate, Handle:query, error[], errnum, data[], size)
 
 	SQL_FreeHandle(query)
 
-	new admin_nick[32], admin_authid[32], admin_ip[16]
+	new admin_nick[MAX_NAME_LENGTH], admin_authid[MAX_AUTHID_LENGTH], admin_ip[MAX_IP_LENGTH]
 	mysql_get_username_safe(id, admin_nick, charsmax(admin_nick))
 	get_user_ip(id, admin_ip, charsmax(admin_ip), 1)
 	get_user_authid(id, admin_authid, charsmax(admin_authid))
@@ -141,7 +141,7 @@ public _cmdMenuBan(failstate, Handle:query, error[], errnum, data[], size)
 
 	new servername_safe[256]
 	mysql_escape_string(server_name,servername_safe,charsmax(servername_safe))
-	new player_nick[32]
+	new player_nick[MAX_NAME_LENGTH]
 	mysql_escape_string(g_choicePlayerName[id],player_nick,charsmax(player_nick))
 
 	new pquery[1024]
@@ -210,7 +210,7 @@ public cmdAddBan( id, level, cid )
 		return PLUGIN_HANDLED;
 	}
 
-	new serverip[64]
+	new serverip[MAX_IP_LENGTH]
 	get_user_ip(0, serverip, charsmax(serverip), 1)
 	if( equal(plr_ip, serverip) )
 	{
@@ -273,12 +273,12 @@ public cmdAddBan( id, level, cid )
 
 public cmd_addban_( failstate, Handle:query, error[], errnum, data[], size )
 {
-	enum { iPlrID, szName[32], szIP[20], szAuthID[35], szReason[128] }
+	enum { iPlrID, szName[MAX_NAME_LENGTH], szIP[MAX_IP_LENGTH], szAuthID[MAX_AUTHID_LENGTH], szReason[128] }
 
 	new id = data[iPlrID]
-	new plr_name[32]
-	new plr_ip[20]
-	new plr_id[35]
+	new plr_name[MAX_NAME_LENGTH]
+	new plr_ip[MAX_IP_LENGTH]
+	new plr_id[MAX_AUTHID_LENGTH]
 	new reason[128]
 
 	copy(plr_name, charsmax(plr_name), data[szName])
@@ -305,7 +305,7 @@ public cmd_addban_( failstate, Handle:query, error[], errnum, data[], size )
 
 	if( !SQL_NumResults(query) )
 	{
-		new admin_nick[100], admin_steamid[35], admin_ip[20]
+		new admin_nick[100], admin_steamid[MAX_AUTHID_LENGTH], admin_ip[MAX_IP_LENGTH]
 		mysql_get_username_safe(id, admin_nick, charsmax(admin_nick))
 		get_user_ip(id, admin_ip, charsmax(admin_ip), 1)
 
@@ -708,7 +708,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 	if( id == 0 )
 		serverCmd = true;
 
-	new amxban_motd_url[256], admin_authid[32], admin_nick[32], pl_authid[32], pl_nick[32], pl_ip[22], ban_type[32], ban_reason[128], iBanLength
+	new amxban_motd_url[256], admin_authid[MAX_AUTHID_LENGTH], admin_nick[MAX_NAME_LENGTH], pl_authid[MAX_AUTHID_LENGTH], pl_nick[MAX_NAME_LENGTH], pl_ip[MAX_IP_LENGTH], ban_type[10], ban_reason[128], iBanLength
 
 	if( !SQL_NumResults(query) )
 	{
@@ -943,7 +943,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 				if (is_user_hltv(players[idx]) || is_user_bot(players[idx]))
 					continue // Dont count HLTV or bots as players
 
-				get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
+				get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
 
 				if (g_choiceTime[id] > 0)
 					format(message, charsmax(message), "%L", players[idx],"PUBLIC_BAN_ANNOUNCE", pl_nick, cTimeLengthPlayer, ban_reason)
@@ -967,7 +967,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 				if(is_user_hltv(players[idx]) || is_user_bot(players[idx]))
 					continue // Dont count HLTV or bots as players
 
-				get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
+				get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
 				
 				if(g_choiceTime[id] > 0)
 					format(message, charsmax(message), "%L", players[idx], "PUBLIC_BAN_ANNOUNCE_2", pl_nick, cTimeLengthPlayer, ban_reason, admin_nick)
@@ -993,7 +993,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 					if( is_user_hltv(players[idx]) || is_user_bot(players[idx]) )
 						continue // Dont count HLTV or bots as players
 
-					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
+					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
 					
 					if(g_choiceTime[id] > 0)
 						format(message, charsmax(message), "%L", players[idx], "PUBLIC_BAN_ANNOUNCE_2", pl_nick, cTimeLengthPlayer, ban_reason, admin_nick)
@@ -1016,7 +1016,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 				{
 					if( is_user_hltv(players[idx]) || is_user_bot(players[idx]) ) continue // Dont count HLTV or bots as players
 					
-					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
+					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
 					
 					if(g_choiceTime[id] > 0)
 						format(message, charsmax(message),"%L", players[idx],"PUBLIC_BAN_ANNOUNCE", pl_nick, cTimeLengthPlayer, ban_reason)
@@ -1043,7 +1043,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 					if( is_user_hltv(players[idx]) || is_user_bot(players[idx]) )
 						continue // Dont count HLTV or bots as players
 
-					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
+					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
 					
 					if (g_choiceTime[id] > 0)
 						format(message, charsmax(message), "%L", players[idx], "PUBLIC_BAN_ANNOUNCE_2", pl_nick, cTimeLengthPlayer, ban_reason, admin_nick)
@@ -1070,7 +1070,7 @@ public _select_amxbans_motd(failstate, Handle:query, error[], errnum, data[], si
 					if( is_user_hltv(players[idx]) || is_user_bot(players[idx]) )
 						continue // Dont count HLTV or bots as players
 					
-					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, 127)
+					get_time_length(players[idx], iBanLength, timeunit_minutes, cTimeLengthPlayer, charsmax(cTimeLengthPlayer))
 					
 					if (g_choiceTime[id] > 0)
 						format(message, charsmax(message),"%L", players[idx],"PUBLIC_BAN_ANNOUNCE", pl_nick, cTimeLengthPlayer, ban_reason)

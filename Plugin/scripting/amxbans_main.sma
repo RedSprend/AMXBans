@@ -266,7 +266,7 @@ public client_putinserver(id)
 
 	if( is_user_admin(id) )
 	{ // last active
-		new szAuthID[35], szName[32], szQuery[512]
+		new szAuthID[MAX_AUTHID_LENGTH], szName[MAX_NAME_LENGTH], szQuery[512]
 		get_user_authid(id, szAuthID, charsmax(szAuthID))
 		get_user_name(id, szName, charsmax(szName))
 
@@ -486,7 +486,7 @@ mysql_escape_string(const source[],dest[],len)
 mysql_get_username_safe(id,dest[],len)
 {
 	new name[128]
-	get_user_name(id,name,127)
+	get_user_name(id,name,charsmax(name))
 	mysql_escape_string(name,dest,len)
 }
 

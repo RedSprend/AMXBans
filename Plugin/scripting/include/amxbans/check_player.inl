@@ -63,18 +63,18 @@ public prebanned_check(id)
 		return PLUGIN_HANDLED
 	}
 
-	new szAuthID[MAX_AUTHID_LENGTH], szIP[20], pquery[512]
-	get_user_authid(id, szAuthID, charsmax(szAuthID))
-	get_user_ip(id, szIP, charsmax(szIP), 1)
-
-	//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ((player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI')) AND expired=1",g_dbPrefix, tbl_bans, szAuthID, szIP)
-	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1",g_dbPrefix, tbl_bans, szAuthID)
-
-	new data[1]
-	data[0] = id
-
 	if( g_SqlX )
 	{
+		new szAuthID[MAX_AUTHID_LENGTH], szIP[MAX_IP_LENGTH], pquery[512]
+		get_user_authid(id, szAuthID, charsmax(szAuthID))
+		get_user_ip(id, szIP, charsmax(szIP), 1)
+
+		formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE (player_id='%s' AND ban_type='S' OR player_id='%s' AND ban_type='SI' OR player_ip='%s' AND ban_type='SI') AND expired=1", g_dbPrefix, tbl_bans, szAuthID, szAuthID, szIP)
+		//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1",g_dbPrefix, tbl_bans, szAuthID)
+
+		new data[1]
+		data[0] = id
+
 		SQL_ThreadQuery(g_SqlX, "prebanned_check_", pquery, data, sizeof(data))
 	}
 
@@ -123,12 +123,12 @@ public prebanned_check_(failstate, Handle:query, error[], errnum, data[], size)
 
 public prebanned_check_single( id, iPlayer )
 {
-	new authid[MAX_AUTHID_LENGTH], ip[20], pquery[512]
+	new authid[MAX_AUTHID_LENGTH], ip[MAX_IP_LENGTH], pquery[512]
 	get_user_authid(iPlayer, authid, charsmax(authid))
 	get_user_ip(iPlayer, ip, charsmax(ip), 1)
 
-	//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1", g_dbPrefix, tbl_bans, authid, ip)
-	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1", g_dbPrefix, tbl_bans, authid)
+	formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE (player_id='%s' AND ban_type='S' OR player_id='%s' AND ban_type='SI' OR player_ip='%s' AND ban_type='SI') AND expired=1", g_dbPrefix, tbl_bans, authid, authid, ip)
+	//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1", g_dbPrefix, tbl_bans, authid)
 
 	new data[2]
 	data[0] = id
@@ -190,7 +190,7 @@ public NotifyAdmin( id )
 
 public check_player(id)
 {
-	new authid[32], ip[20]
+	new authid[MAX_AUTHID_LENGTH], ip[MAX_IP_LENGTH]
 	get_user_authid(id, authid, charsmax(authid))
 	get_user_ip(id, ip, charsmax(ip), 1)
 
@@ -222,7 +222,7 @@ public check_player_(failstate, Handle:query, error[], errnum, data[], size)
 		return PLUGIN_HANDLED
 	}
 
-	new ban_reason[128], admin_nick[32], admin_authid[32], admin_ip[16], ban_type[4], player_nick[32], player_authid[32], player_ip[22], server_name[100], server_ip[16]
+	new ban_reason[128], admin_nick[MAX_NAME_LENGTH], admin_authid[MAX_AUTHID_LENGTH], admin_ip[MAX_IP_LENGTH], ban_type[4], player_nick[MAX_NAME_LENGTH], player_authid[MAX_AUTHID_LENGTH], player_ip[MAX_IP_LENGTH], server_name[100], server_ip[MAX_IP_LENGTH]
 
 	new bid = SQL_ReadResult(query, 0)
 	new ban_created = SQL_ReadResult(query, 1)
@@ -246,7 +246,7 @@ public check_player_(failstate, Handle:query, error[], errnum, data[], size)
 
 	new current_time_int = get_systime(0)
 
-	if ((ban_length_int == 0) || (ban_created ==0) || ((ban_created+ban_length_int) > current_time_int))// || equal(ban_type, "SI") && equal(player_nick, player_nick)) // nickname is also banned if IP is banned
+	if ((ban_length_int == 0) || (ban_created == 0) || ((ban_created+ban_length_int) > current_time_int))// || equal(ban_type, "SI") && equal(player_nick, player_nick)) // nickname is also banned if IP is banned
 	{
 		// A ban was found for the connecting player!! Lets see how long it is or if it has expired
 

@@ -50,7 +50,7 @@ check_flagged(id)
 	if(g_being_flagged[id])
 		return PLUGIN_HANDLED;
 
-	new authid[32], ip[16], pquery[1024];
+	new authid[MAX_AUTHID_LENGTH], ip[MAX_IP_LENGTH], pquery[1024];
 	get_user_authid(id, authid, charsmax(authid));
 	get_user_ip(id, ip, charsmax(ip), 1);
 

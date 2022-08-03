@@ -43,10 +43,10 @@ new const tbl_bans_edit[] = "_bans_edit";
 new const tbl_flagged[] = "_flagged";
 
 // global
-new g_ip[32];
+new g_ip[MAX_IP_LENGTH];
 new g_port[10];
-new bool:g_kicked_by_amxbans[33];
-new bool:g_being_banned[33];
+new bool:g_kicked_by_amxbans[MAX_PLAYERS + 1];
+new bool:g_being_banned[MAX_PLAYERS + 1];
 new bool:g_supported_game = true;
 
 //forwards
@@ -64,26 +64,26 @@ new g_MyMsgSync;
 
 // Variables for menus
 new g_coloredMenus;
-new bool:g_in_flagging[33];
-new bool:set_custom_reason[33];
+new bool:g_in_flagging[MAX_PLAYERS + 1];
+new bool:set_custom_reason[MAX_PLAYERS + 1];
 
-new g_PlayerName[33][64];
-new g_choicePlayerName[33][64];
-new g_choicePlayerAuthid[33][33];
-new g_choicePlayerIp[33][16];
-new g_choicePlayerId[33];
-new g_choiceTime[33];
-new g_choiceReason[33][128];
-new g_ban_type[33][3];
+new g_PlayerName[MAX_PLAYERS + 1][MAX_NAME_LENGTH];
+new g_choicePlayerName[MAX_PLAYERS + 1][MAX_NAME_LENGTH];
+new g_choicePlayerAuthid[MAX_PLAYERS + 1][MAX_AUTHID_LENGTH];
+new g_choicePlayerIp[MAX_PLAYERS + 1][16];
+new g_choicePlayerId[MAX_PLAYERS + 1];
+new g_choiceTime[MAX_PLAYERS + 1];
+new g_choiceReason[MAX_PLAYERS + 1][128];
+new g_ban_type[MAX_PLAYERS + 1][3];
 new g_ident[50];
 
 new Array:g_banReasons;
 new Array:g_banReasons_Bantime;
 
 // flagging
-new bool:g_being_flagged[33];
-new g_flaggedReason[33][128];
-new g_flaggedTime[33];
+new bool:g_being_flagged[MAX_PLAYERS + 1];
+new g_flaggedReason[MAX_PLAYERS + 1][128];
+new g_flaggedTime[MAX_PLAYERS + 1];
 
 /*****************************/
 
@@ -129,4 +129,4 @@ new g_flagtimesnum;
 new g_HighBanMenuValues[14];
 new g_LowBanMenuValues[14];
 new g_FlagMenuValues[14];
-new bool:bPlayerSQLCheck[33][33];
+new bool:bPlayerSQLCheck[MAX_PLAYERS + 1][MAX_PLAYERS + 1];

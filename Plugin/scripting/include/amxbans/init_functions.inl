@@ -49,7 +49,7 @@
 public banmod_online(id)
 {
 	// This is a new way of getting the port number
-	new ip_port[100]
+	new ip_port[MAX_IP_LENGTH + 6]
 	get_pcvar_string(pcvar_serverip, ip_port, charsmax(ip_port))
 	if(contain(ip_port,":") == -1)
 	{

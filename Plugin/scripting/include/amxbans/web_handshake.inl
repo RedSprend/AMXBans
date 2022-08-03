@@ -46,9 +46,12 @@ public cmdLst(id,level,cid)
 {
 	if(id) return PLUGIN_HANDLED
 	
-	new name[MAX_NAME_LENGTH],authid[MAX_AUTHID_LENGTH],ip[16],status,immun,userid
+	new name[MAX_NAME_LENGTH],authid[MAX_AUTHID_LENGTH],ip[MAX_IP_LENGTH],status,immun,userid
 
 	//console_print(id,"%c%c%c%c",-1,-1,-1,-1)
+/*	new players[MAX_PLAYERS], pnum
+	get_players(players, pnum, "ch")
+	for( new i = 0; i < pnum; i++ )*/
 	for(new i = 1; i <= get_maxplayers(); i++)
 	{
 		if(is_user_connected(i)) {

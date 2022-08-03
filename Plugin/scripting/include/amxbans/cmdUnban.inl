@@ -202,7 +202,7 @@ public cmd_unban_3(failstate, Handle:query, error[], errnum, data[], size)
 	{
 		console_print(id, "%L", id, "UNBAN_CONSOLE", g_choicePlayerAuthid[id]);
 
-		new name[32]
+		new name[MAX_NAME_LENGTH]
 		get_user_name(id, name, charsmax(name))
 		for( new i = 1; i <= MaxClients; i++ )
 		{

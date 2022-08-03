@@ -180,7 +180,7 @@ public _cmdMenuBanDisc(failstate, Handle:query, error[], errnum, data[], size)
 		return PLUGIN_HANDLED
 	}
 
-	new admin_nick[32], admin_authid[32], admin_ip[16]
+	new admin_nick[MAX_NAME_LENGTH], admin_authid[MAX_AUTHID_LENGTH], admin_ip[MAX_IP_LENGTH]
 	mysql_get_username_safe(id, admin_nick, charsmax(admin_nick))
 	get_user_ip(id, admin_ip, charsmax(admin_ip), 1)
 	get_user_authid(id, admin_authid, charsmax(admin_authid))
@@ -251,7 +251,7 @@ disconnect_remove_player(id)
 	new dnum=ArraySize(g_disconPLauthid)
 	if(!dnum) return PLUGIN_CONTINUE
 
-	new authid[32], tmpid[35]
+	new authid[MAX_AUTHID_LENGTH], tmpid[MAX_AUTHID_LENGTH]
 	get_user_authid(id, authid, charsmax(authid))
 
 	for(new i = 0;i < dnum;i++)
@@ -279,7 +279,7 @@ disconnected_add_player(id)
 	if(!maxnum)
 		return PLUGIN_CONTINUE
 
-	new name[32],authid[32],ip[16]
+	new name[MAX_NAME_LENGTH],authid[MAX_AUTHID_LENGTH],ip[MAX_IP_LENGTH]
 	get_user_name(id, name, charsmax(name))
 	get_user_authid(id, authid, charsmax(authid))
 	get_user_ip(id, ip, charsmax(ip),1)

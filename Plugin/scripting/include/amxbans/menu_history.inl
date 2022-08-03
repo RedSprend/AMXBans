@@ -99,12 +99,12 @@ public actionHistoryMenu(id,menu,item)
 	}
 	else
 	{
-		new authid[32]//, ip[16]
+		new authid[MAX_AUTHID_LENGTH], ip[MAX_IP_LENGTH]
 		get_user_authid(pid, authid, charsmax(authid))
-		//get_user_ip(id, ip, charsmax(ip), 1)
+		get_user_ip(id, ip, charsmax(ip), 1)
 
-		//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE ( (player_id='%s' AND ban_type='S') OR (player_ip='%s' AND ban_type='SI') ) AND expired=1", g_dbPrefix, tbl_bans, authid, ip)
-		formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1", g_dbPrefix, tbl_bans, authid)
+		formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE (player_id='%s' AND ban_type='S' OR player_id='%s' AND ban_type='SI' OR player_ip='%s' AND ban_type='SI') AND expired=1", g_dbPrefix, tbl_bans, authid, authid, ip)
+		//formatex(pquery, charsmax(pquery), "SELECT COUNT(*) FROM `%s%s` WHERE player_id='%s' AND expired=1", g_dbPrefix, tbl_bans, authid)
 	}
 
 	SQL_ThreadQuery(g_SqlX, "select_motd_history", pquery, data, sizeof(data))
@@ -130,7 +130,7 @@ public select_motd_history(failstate, Handle:query, error[], errnum, data[], siz
 		return PLUGIN_HANDLED
 	}
 
-	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH], ip[20]
+	new name[MAX_NAME_LENGTH], authid[MAX_AUTHID_LENGTH], ip[MAX_IP_LENGTH]
 	get_user_name(pid, name, charsmax(name))
 	get_user_authid(pid, authid, charsmax(authid))
 	get_user_ip(pid, ip, charsmax(ip), 1)
