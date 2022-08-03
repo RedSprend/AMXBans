@@ -14,13 +14,13 @@
 + Reduced the amount of console commands to integrate it into a simple menu.
 + Ban by Steam ID and IP by default.
 + Notify all admins on the game server whenever a player with previous ban(s) enters the game server.
-+ Notify the connecting admin upon entering the game server about all players' with previous ban(s).
++ Notify the connecting admin upon entering the game server about all online players' with previous ban(s).
 + List only all players' with a ban history in the ban history menu.
 + Admins can add/remove ban(s) into/from the database from the console directly.
 	+ Notifies all other admins on the server if a admin add ban/unban.
 	+ (!) Doesn't check if the admin have an account in the database to check their user level if they are only allowed to remove their own bans, yet.
 
- Client console commands:
+ Admin console commands:
 + admin_addban <"authid" or IP> <minutes (0 = permanent)> <"reason"> <name> [ip]
 + admin_banmenu - displays ban menu
 + admin_banhistorymenu - displays ban history of players menu
