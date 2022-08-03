@@ -20,7 +20,7 @@
 	+ Notifies all other admins on the server if a admin add ban/unban.
 	+ (!) Doesn't check if the admin have an account in the database to check their user level if they are only allowed to remove their own bans, yet.
 
- Client console commands:
+ Admin console commands:
 + admin_addban <"authid" or IP> <minutes (0 = permanent)> <"reason"> <name> [ip]
 + admin_banmenu - displays ban menu
 + admin_banhistorymenu - displays ban history of players menu
