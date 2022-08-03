@@ -23,6 +23,7 @@ BAN_PERMANENT = Permanent ban
 MSG_1 = You have been banned from this game server!
 MSG_2 = Reason: %s
 MSG_3 = Duration: %s
+MSG_5 = Banned by previous Admin: %s
 MSG_6 = Banned by Admin: %s
 MSG_7 = You can appeal your ban at %s
 MSG_8 = You have been banned from this game server by %s
