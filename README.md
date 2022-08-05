@@ -1,13 +1,15 @@
  Customized AMXBans
  <br><br>
  Requirements:<br>
- (Based on) AMXBans 6.13 (http://www.amxbans.net/dl.php?f=6.13)
- <br><br>
+ (Based on) AMXBans 6.13 (http://www.amxbans.net/dl.php?f=6.13)<br>
+ This version have modified AMXBans tables, so you have to run sql.sql in your SQL server<br>
+ <br>
  Incomplete list of changes:
 <br>
  Web:
 + New 'Last Active'-column with a date of all admins last active status (not publicly visible to everybody) in admin_list.php
 + List all visible admins in admin_list.php steam signature banner (credit to sami1)
++ Web admins have the option to hide server(s) from the public (only logged in users will be able to see them)
 
  Plugin:
 + Changed commands prefix from 'amx_' to 'admin_'
