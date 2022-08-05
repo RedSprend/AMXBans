@@ -1,7 +1,7 @@
  Customized AMXBans
  <br><br>
  Requirements:<br>
- (Based on) AMXBans 6.13 (http://www.amxbans.net/dl.php?f=6.13)<br>
+ (Based on) AMXBans 6.14.4 (http://www.amxbans.net/dl.php?f=6.13)<br>
  This version have modified AMXBans tables, so you have to run sql.sql in your SQL server<br>
  <br>
  Incomplete list of changes:
